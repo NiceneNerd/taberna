@@ -6,3 +6,5 @@ export interface TableItem {
     lookGetFlag: boolean;
     amount: number;
 }
+
+export type Table = Map<String, TableItem>;
