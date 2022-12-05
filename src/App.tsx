@@ -1,49 +1,65 @@
-import { createSignal } from "solid-js";
+import { Accessor, createSignal, Setter } from "solid-js";
 import logo from "./assets/logo.svg";
 import { invoke } from "@tauri-apps/api/tauri";
+import { open, save } from "@tauri-apps/api/dialog";
+import {
+  RiDeviceSave2Fill,
+  RiDeviceSave3Fill,
+  RiDocumentFolderOpenFill,
+} from "solid-icons/ri";
+import { Option, OptionEquipped, None, equip } from "rustic";
 import "./App.css";
+import { Table, TableItem } from "./shop";
+
+interface File {
+  path: string;
+  file: Map<string, TableItem>;
+}
 
 function App() {
-  const [greetMsg, setGreetMsg] = createSignal("");
-  const [name, setName] = createSignal("");
+  const [file, setFile] = createSignal<Option<File>>(None);
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    setGreetMsg(await invoke("greet", { name: name() }));
-  }
+  const openFile = async () => {
+    const path = equip(
+      await open({
+        filters: [
+          {
+            name: "BOTW Shop Tables",
+            extensions: ["bshop", "yaml", "yml"],
+          },
+          {
+            name: "All Files",
+            extensions: ["*"],
+          },
+        ],
+        title: "Open Shop File",
+      })
+    );
+
+    if (path.isSome()) {
+      console.log(path.unwrap());
+    }
+  };
 
   return (
     <div class="container">
-      <h1>Welcome to Tauri!</h1>
-
       <div class="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" class="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" class="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://solidjs.com" target="_blank">
-          <img src={logo} class="logo solid" alt="Solid logo" />
-        </a>
+        <button title="Open Shop File…" onClick={openFile}>
+          <RiDocumentFolderOpenFill size={16} />
+        </button>
+        <button title="Save">
+          <RiDeviceSave2Fill size={16} />
+        </button>
+        <button title="Save As…">
+          <RiDeviceSave3Fill size={16} />
+        </button>
       </div>
 
-      <p>Click on the Tauri, Vite, and Solid logos to learn more.</p>
-
       <div class="row">
-        <div>
-          <input
-            id="greet-input"
-            onChange={(e) => setName(e.currentTarget.value)}
-            placeholder="Enter a name..."
-          />
-          <button type="button" onClick={() => greet()}>
-            Greet
-          </button>
-        </div>
+        {equip(file())
+          .map((file) => <h3>File opened</h3>)
+          .unwrapOr(<h3 class="empty">No file opened</h3>)}
       </div>
-
-      <p>{greetMsg}</p>
     </div>
   );
 }

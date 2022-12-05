@@ -11,14 +11,16 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@tauri-apps/cli": "^1.1.0",
     "@types/node": "^18.7.10",
     "typescript": "^4.7.4",
     "vite": "^3.0.0",
-    "vite-plugin-solid": "^2.3.0",
-    "@tauri-apps/cli": "^1.1.0"
+    "vite-plugin-solid": "^2.3.0"
   },
   "dependencies": {
-    "solid-js": "^1.4.7",
-    "@tauri-apps/api": "^1.1.0"
+    "@tauri-apps/api": "^1.1.0",
+    "rustic": "^1.2.2",
+    "solid-icons": "^1.0.4",
+    "solid-js": "^1.4.7"
   }
 }
