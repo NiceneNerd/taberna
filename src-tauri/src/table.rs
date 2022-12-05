@@ -13,7 +13,7 @@ pub struct TableItem {
     pub amount: usize,
 }
 
-type Table = IndexMap<String, TableItem>;
+pub type Table = IndexMap<String, TableItem>;
 
 pub fn table_from_obj(obj: &ParameterObject) -> Result<Table> {
     let item_count = obj
@@ -23,28 +23,28 @@ pub fn table_from_obj(obj: &ParameterObject) -> Result<Table> {
     let table = (1..=item_count)
         .map(|i| -> Result<(String, TableItem)> {
             let sort = obj
-                .get(format!("ItemSort{:3}", i))
+                .get(format!("ItemSort{:03}", i))
                 .context("Item in shop table missing sort value")?
                 .as_int()? as usize;
             let name = obj
-                .get(format!("ItemName{:3}", i))
+                .get(format!("ItemName{:03}", i))
                 .context("Item in shop table missing name value")?
                 .as_str()?
                 .to_owned();
             let num = obj
-                .get(format!("ItemNum{:3}", i))
+                .get(format!("ItemNum{:03}", i))
                 .context("Item in shop table missing num value")?
                 .as_int()? as usize;
             let adjust_price = obj
-                .get(format!("ItemAdjustPrice{:3}", i))
+                .get(format!("ItemAdjustPrice{:03}", i))
                 .context("Item in shop table missing adjust price value")?
                 .as_int()? as isize;
             let look_get_flag = obj
-                .get(format!("ItemLookGetFlag{:3}", i))
+                .get(format!("ItemLookGetFlg{:03}", i))
                 .context("Item in shop table missing look get flag value")?
                 .as_bool()?;
             let amount = obj
-                .get(format!("ItemAmount{:3}", i))
+                .get(format!("ItemAmount{:03}", i))
                 .context("Item in shop table missing amount value")?
                 .as_int()? as usize;
             Ok((name, TableItem {
@@ -64,22 +64,25 @@ pub fn table_to_obj(name: &str, table: &[TableItem]) -> ParameterObject {
         .with_parameter("ColumnNum", Parameter::Int(table.len() as i32))
         .with_parameters(table.iter().enumerate().flat_map(|(i, item)| {
             [
-                (format!("ItemSort{:3}", i), Parameter::Int(item.sort as i32)),
                 (
-                    format!("ItemName{:3}", i),
+                    format!("ItemSort{:03}", i),
+                    Parameter::Int(item.sort as i32),
+                ),
+                (
+                    format!("ItemName{:03}", i),
                     Parameter::String64(Box::new(name.into())),
                 ),
-                (format!("ItemNum{:3}", i), Parameter::Int(item.num as i32)),
+                (format!("ItemNum{:03}", i), Parameter::Int(item.num as i32)),
                 (
-                    format!("ItemAdjustPrice{:3}", i),
+                    format!("ItemAdjustPrice{:03}", i),
                     Parameter::Int(item.adjust_price as i32),
                 ),
                 (
-                    format!("ItemLookGetFlag{:3}", i),
+                    format!("ItemLookGetFlg{:03}", i),
                     Parameter::Bool(item.look_get_flag),
                 ),
                 (
-                    format!("ItemAmount{:3}", i),
+                    format!("ItemAmount{:03}", i),
                     Parameter::Int(item.amount as i32),
                 ),
             ]
@@ -98,7 +101,7 @@ pub fn parse_tables(table_data: &ParameterIO) -> Result<IndexMap<String, Table>>
     let table_names: Vec<String> = (1..=table_count)
         .map(|i| -> Result<String> {
             Ok(header
-                .get(format!("Table{:2}", i))
+                .get(format!("Table{:02}", i))
                 .context("Shop table header missing a table name")?
                 .as_str()?
                 .to_owned())

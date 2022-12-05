@@ -13,14 +13,14 @@ import { Table, TableItem } from "./shop";
 
 interface File {
   path: string;
-  file: Map<string, TableItem>;
+  file: Map<string, Table>;
 }
 
 function App() {
   const [file, setFile] = createSignal<Option<File>>(None);
 
   const openFile = async () => {
-    const path = equip(
+    const selected = equip(
       await open({
         filters: [
           {
@@ -36,8 +36,21 @@ function App() {
       })
     );
 
-    if (path.isSome()) {
-      console.log(path.unwrap());
+    if (selected.isSome()) {
+      let path = selected.unwrap();
+      if (Array.isArray(path)) {
+        path = path[0];
+      }
+      try {
+        const result: Map<string, Table> = await invoke("open", { path });
+        const file: File = {
+          path,
+          file: result,
+        };
+        setFile(file);
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -57,7 +70,11 @@ function App() {
 
       <div class="row">
         {equip(file())
-          .map((file) => <h3>File opened</h3>)
+          .map((file) => (
+            <>
+              <form></form>
+            </>
+          ))
           .unwrapOr(<h3 class="empty">No file opened</h3>)}
       </div>
     </div>
