@@ -4,6 +4,7 @@ use roead::{aamp::*, h, types::FixedSafeString};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct TableItem {
     pub sort: usize,
     pub name: String,
