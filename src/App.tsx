@@ -1,5 +1,4 @@
-import { Accessor, createSignal, Setter } from "solid-js";
-import logo from "./assets/logo.svg";
+import { Accessor, createSignal, For, Setter } from "solid-js";
 import { invoke } from "@tauri-apps/api/tauri";
 import { open, save } from "@tauri-apps/api/dialog";
 import {
@@ -8,16 +7,17 @@ import {
   RiDocumentFolderOpenFill,
 } from "solid-icons/ri";
 import { Option, OptionEquipped, None, equip } from "rustic";
-import "./App.css";
 import { Table, TableItem } from "./shop";
+import { TableView } from "./components/TableView";
 
 interface File {
   path: string;
-  file: Map<string, Table>;
+  tables: Map<string, Table>;
 }
 
 function App() {
   const [file, setFile] = createSignal<Option<File>>(None);
+  const [selectedTable, setSelectedTable] = createSignal<Option<string>>(None);
 
   const openFile = async () => {
     const selected = equip(
@@ -42,11 +42,23 @@ function App() {
         path = path[0];
       }
       try {
-        const result: Map<string, Table> = await invoke("open", { path });
+        const res: Object = await invoke("open", { path });
+        const tables: Map<string, Table> = new Map(
+          Object.entries(res).map(([name, table]) => [
+            name,
+            new Map(
+              Object.entries(table).map(([itemName, item]) => [
+                itemName,
+                item as TableItem,
+              ])
+            ),
+          ])
+        );
         const file: File = {
           path,
-          file: result,
+          tables,
         };
+        console.log(file);
         setFile(file);
       } catch (error) {
         console.error(error);
@@ -68,15 +80,30 @@ function App() {
         </button>
       </div>
 
-      <div class="row">
-        {equip(file())
-          .map((file) => (
-            <>
-              <form></form>
-            </>
-          ))
-          .unwrapOr(<h3 class="empty">No file opened</h3>)}
-      </div>
+      {equip(file())
+        .map((file) => (
+          <>
+            <div class="row">
+              <select
+                onChange={(e) => {
+                  const target = e.target as HTMLSelectElement;
+                  setSelectedTable(target.value);
+                }}
+              >
+                <For each={[...file.tables.keys()]}>
+                  {(tableName) => <option>{tableName}</option>}
+                </For>
+              </select>
+              <button>Add</button>
+            </div>
+            {equip(selectedTable())
+              .map((tableName) => (
+                <TableView table={equip(file.tables.get(tableName)).unwrap()} />
+              ))
+              .unwrapOr(None)}
+          </>
+        ))
+        .unwrapOr(<h3 class="empty">No file opened</h3>)}
     </div>
   );
 }

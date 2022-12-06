@@ -1,0 +1,90 @@
+.item {
+  border: 1px solid #1f1f1f98;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  color: #ffffff;
+  transition: background-color 0.2s;
+}
+
+.item:hover {
+  background-color: #396cd833;
+}
+
+.item.selected {
+  height: auto;
+}
+
+.spacer {
+  flex-grow: 1;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  justify-items: center;
+}
+
+.props {
+  display: flex;
+  flex-direction: column;
+  max-height: 0;
+  overflow-y: hidden;
+  transition: max-height 0.2s;
+}
+
+.props .row {
+  align-items: center;
+  justify-items: center;
+  justify-content: space-between;
+}
+
+.item.selected .props {
+  max-height: 100vh;
+}
+
+.lbl {
+  position: relative;
+  display: block;
+  height: 0.6em;
+  width: 2em;
+  margin-right: 1em;
+  background: #898989;
+  border-radius: 4em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.lbl:after {
+  position: absolute;
+  left: -0.25em;
+  top: -0.3em;
+  display: block;
+  width: 1.2em;
+  height: 1.2em;
+  border-radius: 100px;
+  background: #fff;
+  box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.05);
+  content: "";
+  transition: all 0.3s ease;
+}
+.lbl:active:after {
+  transform: scale(1.15, 0.85);
+}
+.cbx:checked ~ label {
+  background: #396cd899;
+}
+.cbx:checked ~ label:after {
+  left: 20px;
+  background: #396cd8;
+}
+.cbx:disabled ~ label {
+  background: #d5d5d5;
+  pointer-events: none;
+}
+.cbx:disabled ~ label:after {
+  background: #bcbdbc;
+}
+.hidden {
+  display: none;
+}

@@ -1,0 +1,6 @@
+.table-view {
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  background-color: #0f0f0f98;
+}
