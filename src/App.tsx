@@ -95,7 +95,7 @@ function App() {
           : file.tables.keys().next().value;
         setSelectedTable(initialTable);
       } catch (error) {
-        console.error(error);
+        alert(error);
       }
     }
   };
@@ -103,8 +103,12 @@ function App() {
   const saveFile = async () => {
     if (!file()) return;
     const { path, tables } = equip(file()).unwrap();
-    await invoke("save", { path, tables: toObject(tables) });
-    setModified(false);
+    try {
+      await invoke("save", { path, tables: toObject(tables) });
+      setModified(false);
+    } catch (error) {
+      alert(error);
+    }
   };
 
   const saveFileAs = async () => {
@@ -128,13 +132,17 @@ function App() {
       ],
     });
     if (!path) return;
-    await invoke("save", { path, tables: toObject(tables) });
-    let newFile: File = {
-      path,
-      tables,
-    };
-    setFile(newFile);
-    setModified(false);
+    try {
+      await invoke("save", { path, tables: toObject(tables) });
+      let newFile: File = {
+        path,
+        tables,
+      };
+      setFile(newFile);
+      setModified(false);
+    } catch (error) {
+      alert(error);
+    }
   };
 
   const addTable = () => {
