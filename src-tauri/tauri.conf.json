@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "taberna",
-    "version": "0.0.0"
+    "version": "0.0.1"
   },
   "tauri": {
     "allowlist": {
@@ -35,7 +35,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.nicenenerd.taberna",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
