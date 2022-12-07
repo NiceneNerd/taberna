@@ -8,7 +8,7 @@ use std::{fs, path::Path};
 use anyhow::Context;
 use indexmap::IndexMap;
 use roead::aamp::ParameterIO;
-use table::Table;
+use table::{tables_to_pio, Table};
 
 mod table;
 
@@ -37,10 +37,17 @@ fn open(path: &str) -> Result<IndexMap<String, Table>> {
     Ok(table::parse_tables(&pio)?)
 }
 
+#[tauri::command]
+fn save(tables: IndexMap<String, Table>, path: &str) -> Result<()> {
+    let path = Path::new(path);
+    std::fs::write(path, tables_to_pio(tables).to_text()).context("Failed to save")?;
+    Ok(())
+}
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_persisted_scope::init())
-        .invoke_handler(tauri::generate_handler![open])
+        .invoke_handler(tauri::generate_handler![open, save])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

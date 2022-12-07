@@ -59,10 +59,10 @@ pub fn table_from_obj(obj: &ParameterObject) -> Result<Table> {
     Ok(table)
 }
 
-pub fn table_to_obj(name: &str, table: &[TableItem]) -> ParameterObject {
+pub fn table_to_obj(table: IndexMap<String, TableItem>) -> ParameterObject {
     ParameterObject::new()
         .with_parameter("ColumnNum", Parameter::Int(table.len() as i32))
-        .with_parameters(table.iter().enumerate().flat_map(|(i, item)| {
+        .with_parameters(table.iter().enumerate().flat_map(|(i, (name, item))| {
             [
                 (
                     format!("ItemSort{:03}", i),
@@ -70,7 +70,7 @@ pub fn table_to_obj(name: &str, table: &[TableItem]) -> ParameterObject {
                 ),
                 (
                     format!("ItemName{:03}", i),
-                    Parameter::String64(Box::new(name.into())),
+                    Parameter::String64(Box::new(name.as_str().into())),
                 ),
                 (format!("ItemNum{:03}", i), Parameter::Int(item.num as i32)),
                 (
@@ -120,4 +120,24 @@ pub fn parse_tables(table_data: &ParameterIO) -> Result<IndexMap<String, Table>>
             ))
         })
         .collect::<_>()
+}
+
+pub fn tables_to_pio(table_data: IndexMap<String, Table>) -> ParameterIO {
+    ParameterIO::new()
+        .with_object(
+            "Header",
+            ParameterObject::new()
+                .with_parameter("TableNum", Parameter::Int(table_data.len() as i32))
+                .with_parameters(table_data.keys().enumerate().map(|(i, k)| {
+                    (
+                        format!("Table{:02}", i),
+                        Parameter::String64(Box::new(k.as_str().into())),
+                    )
+                })),
+        )
+        .with_objects(
+            table_data
+                .into_iter()
+                .map(|(name, table)| (name, table_to_obj(table))),
+        )
 }

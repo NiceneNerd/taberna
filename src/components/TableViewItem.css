@@ -1,5 +1,5 @@
 .item {
-  border: 1px solid #1f1f1f98;
+  border: 1px solid #1f1f1fcc;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
@@ -8,11 +8,23 @@
   transition: background-color 0.2s;
 }
 
+.item:first-child {
+  border-top: none;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.item:last-child {
+  border-bottom: none;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
 .item:hover {
   background-color: #396cd833;
 }
 
-.item.selected {
+.item.expanded {
   height: auto;
 }
 
@@ -24,9 +36,19 @@
   display: flex;
   align-items: center;
   justify-items: center;
+  gap: 0.6em;
+}
+
+.label small {
+  color: #f6f6f699;
+}
+
+.label button {
+  padding: 0.25em 0.5em;
 }
 
 .props {
+  font-size: 14px;
   display: flex;
   flex-direction: column;
   max-height: 0;
@@ -38,27 +60,41 @@
   align-items: center;
   justify-items: center;
   justify-content: space-between;
+  padding: 0.3em;
 }
 
-.item.selected .props {
+.props input[type="number"] {
+  background-color: transparent;
+  padding: 0.3em 0.6em;
+  max-width: 2em;
+  text-align: right;
+}
+
+.props input[type="number"]:focus {
+  /* border: 1px solid #f6f6f699;
+  border-radius: 0.6em; */
+  background-color: #1f1f1fcc;
+}
+
+.item.expanded .props {
   max-height: 100vh;
 }
 
 .lbl {
   position: relative;
   display: block;
-  height: 0.6em;
+  height: 0.8em;
   width: 2em;
-  margin-right: 1em;
+  margin-right: 0.6em;
   background: #898989;
   border-radius: 4em;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.15s ease;
 }
 .lbl:after {
   position: absolute;
   left: -0.25em;
-  top: -0.3em;
+  top: -0.2em;
   display: block;
   width: 1.2em;
   height: 1.2em;
@@ -66,7 +102,7 @@
   background: #fff;
   box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.05);
   content: "";
-  transition: all 0.3s ease;
+  transition: all 0.15s ease;
 }
 .lbl:active:after {
   transform: scale(1.15, 0.85);

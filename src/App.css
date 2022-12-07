@@ -1,0 +1,34 @@
+.table-select {
+  margin: 1.8em auto;
+  max-width: min-content;
+}
+
+.table-select select,
+.table-select button {
+  margin: 0;
+}
+
+.table-select select {
+  border: #0f0f0f;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: #3f3f3f;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+}
+
+.table-select option {
+  padding: 0.3em 0.6em;
+}
+
+.table-select button.del {
+  border: #ff2e2ecc;
+}
+
+.table-select input {
+  margin: 0;
+  text-align: center;
+  font-size: 16px;
+  padding: 0.6em 1.2em;
+  background-color: #1f1f1fcc;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+}

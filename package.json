@@ -19,8 +19,8 @@
   },
   "dependencies": {
     "@tauri-apps/api": "^1.1.0",
+    "@thisbeyond/solid-select": "^0.13.0",
     "rustic": "^1.2.2",
-    "solid-autocomplete": "^0.6.0",
     "solid-icons": "^1.0.4",
     "solid-js": "^1.4.7"
   }
