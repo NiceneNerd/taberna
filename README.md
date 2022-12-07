@@ -21,7 +21,7 @@ Bits](https://github.com/NiceneNerd/Wild-Bits)) are supported.
 
 The UI should be fairly self-explanatory if you know how shop data files work.
 For information about shop data files, check [the entry on the ZeldaMods 
-wiki](https://zeldamods.org/wiki/Bshop).\
+wiki](https://zeldamods.org/wiki/Bshop).
 
 ## Known Issues
 
