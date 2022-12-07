@@ -23,7 +23,7 @@
     "bundle": {
       "active": true,
       "category": "DeveloperTool",
-      "copyright": "",
+      "copyright": "2022-2023 Caleb Smith",
       "deb": {
         "depends": []
       },
@@ -36,16 +36,9 @@
         "icons/icon.ico"
       ],
       "identifier": "com.nicenenerd.taberna",
-      "longDescription": "",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
-      },
+      "longDescription": "Taberna can edit BOTW shop data files (extension `.bshop`), used to manage inventories for Beedle, other merchants, and other actors with a merchant-based interface (e.g. Cherry).",
       "resources": [],
-      "shortDescription": "",
+      "shortDescription": "Easy shop table editor for BOTW",
       "targets": "all",
       "windows": {
         "certificateThumbprint": null,
