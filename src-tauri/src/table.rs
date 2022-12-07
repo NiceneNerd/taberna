@@ -130,7 +130,7 @@ pub fn tables_to_pio(table_data: IndexMap<String, Table>) -> ParameterIO {
                 .with_parameter("TableNum", Parameter::Int(table_data.len() as i32))
                 .with_parameters(table_data.keys().enumerate().map(|(i, k)| {
                     (
-                        format!("Table{:02}", i),
+                        format!("Table{:02}", i + 1),
                         Parameter::String64(Box::new(k.as_str().into())),
                     )
                 })),
