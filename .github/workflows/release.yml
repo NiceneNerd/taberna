@@ -6,7 +6,6 @@ on:
 jobs:
   publish-tauri:
     strategy:
-      fail-fast: false
       matrix:
         platform: [ubuntu-20.04, windows-latest]
 
@@ -23,7 +22,9 @@ jobs:
         with:
           node-version: 16
       - name: install Rust stable
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly-2022-09-02
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'
         run: |
