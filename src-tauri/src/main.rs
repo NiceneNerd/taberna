@@ -40,7 +40,19 @@ fn open(path: &str) -> Result<IndexMap<String, Table>> {
 #[tauri::command]
 fn save(tables: IndexMap<String, Table>, path: &str) -> Result<()> {
     let path = Path::new(path);
-    std::fs::write(path, tables_to_pio(tables).to_text()).context("Failed to save")?;
+    let pio = tables_to_pio(tables);
+    let data: Vec<u8> = match path
+        .extension()
+        .unwrap_or_default()
+        .to_str()
+        .unwrap_or_default()
+        .to_lowercase()
+        .as_str()
+    {
+        "yaml" | "yml" => pio.to_text().into(),
+        _ => pio.to_binary(),
+    };
+    std::fs::write(path, data).context("Failed to save")?;
     Ok(())
 }
 
