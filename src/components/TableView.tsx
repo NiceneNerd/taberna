@@ -11,6 +11,7 @@ import { STOCK_ITEMS } from "../util";
 
 type TableViewProps = {
   table: Table;
+  onChange: () => any;
 };
 
 const ITEM_OPTIONS = createOptions(STOCK_ITEMS, { createable: true, filterable: true });
@@ -35,18 +36,20 @@ export function TableView(props: TableViewProps) {
     props.table.set(newItemName(), newItem);
     setTableItems(loadItems());
     setNewItemName("");
+    props.onChange();
   };
 
   const deleteItem = (name: string) => {
     props.table.delete(name);
     setTableItems(loadItems());
+    props.onChange();
   };
 
   return (
     <div class="table-view">
       <For each={tableItems()}>
         {([itemName, tableItem]) => (
-          <TableItemView name={itemName} item={tableItem} onDelete={deleteItem} />
+          <TableItemView name={itemName} item={tableItem} onDelete={deleteItem} onChange={props.onChange} />
         )}
       </For>
       <div class="item row">

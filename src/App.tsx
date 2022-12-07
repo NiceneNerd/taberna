@@ -1,12 +1,14 @@
-import { Accessor, createSignal, For, Setter } from "solid-js";
+import { Accessor, createEffect, createSignal, For, Setter } from "solid-js";
 import { invoke } from "@tauri-apps/api/tauri";
+import { appWindow } from "@tauri-apps/api/window";
+import { TauriEvent } from "@tauri-apps/api/event";
 import { open, save } from "@tauri-apps/api/dialog";
 import {
   RiDeviceSave2Fill,
   RiDeviceSave3Fill,
   RiDocumentFolderOpenFill,
   RiSystemAddFill,
-  RiSystemDeleteBinFill
+  RiSystemDeleteBinFill,
 } from "solid-icons/ri";
 import { Option, OptionEquipped, None, equip } from "rustic";
 import { Table, TableItem } from "./shop";
@@ -21,8 +23,26 @@ interface File {
 
 function App() {
   const [file, setFile] = createSignal<Option<File>>(None);
+  const [modified, setModified] = createSignal(false);
   const [selectedTable, setSelectedTable] = createSignal<Option<string>>(None);
   const [newTableName, setNewTableName] = createSignal("");
+
+  appWindow.listen(TauriEvent.WINDOW_CLOSE_REQUESTED, () => {
+    if (
+      !modified() ||
+      confirm("You have unsaved changes. Are you sure you want to exit?")
+    ) {
+      appWindow.close();
+    }
+  });
+
+  createEffect(() => {
+    equip(file()).map(async (file) => {
+      await appWindow.setTitle(
+        `${file.path.split(/[\/\\]/).pop()}${modified() ? "*" : ""} - Taberna`
+      );
+    });
+  });
 
   const openFile = async () => {
     const selected = equip(
@@ -30,18 +50,18 @@ function App() {
         filters: [
           {
             name: "Binary Shop Table",
-            extensions: ["bshop"]
+            extensions: ["bshop"],
           },
           {
             name: "Text Shop Table",
-            extensions: ["yaml", "yml"]
+            extensions: ["yaml", "yml"],
           },
           {
             name: "All Files",
-            extensions: ["*"]
-          }
+            extensions: ["*"],
+          },
         ],
-        title: "Open Shop File"
+        title: "Open Shop File",
       })
     );
 
@@ -58,17 +78,18 @@ function App() {
             new Map(
               Object.entries(table).map(([itemName, item]) => [
                 itemName,
-                item as TableItem
+                item as TableItem,
               ])
-            )
+            ),
           ])
         );
         const file: File = {
           path,
-          tables
+          tables,
         };
         console.log(file);
         setFile(file);
+        setModified(false);
         const initialTable = file.tables.has("Normal")
           ? "Normal"
           : file.tables.keys().next().value;
@@ -83,6 +104,7 @@ function App() {
     if (!file()) return;
     const { path, tables } = equip(file()).unwrap();
     await invoke("save", { path, tables: toObject(tables) });
+    setModified(false);
   };
 
   const saveFileAs = async () => {
@@ -93,20 +115,26 @@ function App() {
       filters: [
         {
           name: "Binary Shop Table",
-          extensions: ["bshop"]
+          extensions: ["bshop"],
         },
         {
           name: "Text Shop Table",
-          extensions: ["yaml", "yml"]
+          extensions: ["yaml", "yml"],
         },
         {
           name: "All Files",
-          extensions: ["*"]
-        }
-      ]
+          extensions: ["*"],
+        },
+      ],
     });
-    if (path)
-      await invoke("save", { path, tables: toObject(tables) });
+    if (!path) return;
+    await invoke("save", { path, tables: toObject(tables) });
+    let newFile: File = {
+      path,
+      tables,
+    };
+    setFile(newFile);
+    setModified(false);
   };
 
   const addTable = () => {
@@ -115,9 +143,10 @@ function App() {
     tables.set(newTableName(), new Map());
     setFile({
       tables,
-      path: openFile.path
+      path: openFile.path,
     });
     setNewTableName("");
+    setModified(true);
   };
 
   const deleteTable = () => {
@@ -129,8 +158,9 @@ function App() {
     );
     setFile({
       tables,
-      path: openFile.path
+      path: openFile.path,
     });
+    setModified(true);
   };
 
   return (
@@ -148,17 +178,18 @@ function App() {
       </div>
 
       {equip(file())
-        .map(file => (
+        .map((file) => (
           <>
             <div class="row table-select">
               <select
                 value={equip(selectedTable()).unwrapOr("")}
-                onChange={e => {
+                onChange={(e) => {
                   const target = e.target as HTMLSelectElement;
                   setSelectedTable(target.value);
-                }}>
+                }}
+              >
                 <For each={[...file.tables.keys()]}>
-                  {tableName => <option>{tableName}</option>}
+                  {(tableName) => <option>{tableName}</option>}
                 </For>
               </select>
               <button class="del" onClick={deleteTable}>
@@ -166,15 +197,18 @@ function App() {
               </button>
             </div>
             {equip(selectedTable())
-              .map(tableName => (
-                <TableView table={equip(file.tables.get(tableName)).unwrap()} />
+              .map((tableName) => (
+                <TableView
+                  table={equip(file.tables.get(tableName)).unwrap()}
+                  onChange={() => setModified(true)}
+                />
               ))
               .unwrapOr(None)}
             <div class="row table-select">
               <input
                 placeholder="Add new table…"
                 value={newTableName()}
-                onInput={e => setNewTableName((e.target as HTMLInputElement).value)}
+                onInput={(e) => setNewTableName((e.target as HTMLInputElement).value)}
               />
               <button onClick={addTable}>
                 <RiSystemAddFill />

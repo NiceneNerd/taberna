@@ -9,6 +9,7 @@ type TableItemViewProps = {
   name: string;
   item: TableItem;
   onDelete: (name: string) => void;
+  onChange: () => any;
 };
 
 export function TableItemView(props: TableItemViewProps) {
@@ -16,14 +17,16 @@ export function TableItemView(props: TableItemViewProps) {
   const friendlyName = createMemo(() => ITEM_NAMES.get(props.name));
 
   return (
-    <div
-      classList={{ item: true, expanded: expanded() }}
-    >
+    <div classList={{ item: true, expanded: expanded() }}>
       <div class="label" onClick={() => setExpanded(!expanded())}>
         <label>{props.name}</label>
-        {equip(friendlyName()).map(friendly => <small>({friendly})</small>).unwrapOr(<></>)}
+        {equip(friendlyName())
+          .map((friendly) => <small>({friendly})</small>)
+          .unwrapOr(<></>)}
         <div class="spacer"></div>
-        <button class="del" onClick={() => props.onDelete(props.name)}><RiSystemDeleteBinFill /></button>
+        <button class="del" onClick={() => props.onDelete(props.name)}>
+          <RiSystemDeleteBinFill />
+        </button>
       </div>
       <div class="props">
         <For
@@ -31,27 +34,32 @@ export function TableItemView(props: TableItemViewProps) {
             {
               get: () => props.item.num,
               name: "Max Stock",
-              set: (e: InputEvent) => props.item.num = +(e.target as HTMLInputElement).value,
+              set: (e: InputEvent) =>
+                (props.item.num = +(e.target as HTMLInputElement).value),
             },
             {
               get: () => props.item.adjustPrice,
               name: "Adjust Price",
-              set: (e: InputEvent) => props.item.adjustPrice = +(e.target as HTMLInputElement).value,
+              set: (e: InputEvent) =>
+                (props.item.adjustPrice = +(e.target as HTMLInputElement).value),
             },
             {
               get: () => props.item.amount,
               name: "Amount",
-              set: (e: InputEvent) => props.item.amount = +(e.target as HTMLInputElement).value,
+              set: (e: InputEvent) =>
+                (props.item.amount = +(e.target as HTMLInputElement).value),
             },
             {
               get: () => props.item.sort,
               name: "Sort Value",
-              set: (e: InputEvent) => props.item.sort = +(e.target as HTMLInputElement).value,
+              set: (e: InputEvent) =>
+                (props.item.sort = +(e.target as HTMLInputElement).value),
             },
             {
               get: () => props.item.lookGetFlag,
               name: "Use IsGet Flag",
-              set: (e: InputEvent) => props.item.lookGetFlag = (e.target as HTMLInputElement).checked,
+              set: (e: Event) =>
+                (props.item.lookGetFlag = (e.target as HTMLInputElement).checked),
             },
           ]}
         >
@@ -65,7 +73,10 @@ export function TableItemView(props: TableItemViewProps) {
                       type="number"
                       pattern="[0-9]"
                       value={itemField.get() as number}
-                      onInput={itemField.set}
+                      onInput={(e) => {
+                        itemField.set(e);
+                        props.onChange();
+                      }}
                     />
                   </Match>
                   <Match when={typeof itemField.get() === "boolean"}>
@@ -73,6 +84,10 @@ export function TableItemView(props: TableItemViewProps) {
                       type="checkbox"
                       id={itemField.name + props.name}
                       checked={itemField.get() as boolean}
+                      onChange={(e) => {
+                        itemField.set(e);
+                        props.onChange();
+                      }}
                       class="cbx hidden"
                     />
                     <label for={itemField.name + props.name} class="lbl"></label>
